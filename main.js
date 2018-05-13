@@ -28,35 +28,52 @@ app.use(session({
 	secret: 'supersecret'
 }));
 
+app.set('views', path.join(__dirname, 'pages'));
+app.set('views engine', 'ejs');
+
 app.get('/', function(req, res){
 	res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.post('/login', function(req, res){
-
 	var foundUser;
 	for (var i = 0; i < users.length; i++) {
 		var u = users[i];
 		if(u.username == req.body.username && u.password == req.body.password){
 			foundUser = u.username;
-			break;
 		}
 	};
 	if (foundUser !== undefined){
-		req.session.username = foundUser;
+		req.session.username = req.body.username;
 		res.send('Login successful: ' + 'sessionID ' + req.session.id + '; user: ' + req.session.username);
 	} else {
 		res.status(401).send('Login error');
 	}
 });
 
-app.get('/check', function(req, res){
-	if (req.session.username){
-		res.set('Content-Type', 'text/html');
-		res.send('<h2>User ' + req.session.username + ' is logged in! </h2>');
+app.get('/logout', function(req, res){
+	req.session.username = '';
+	res.send('logged out!');
+});
+
+app.get('/admin', function(req, res){
+	if (req.session.username == 'admin'){
+		res.render('admin_page')
 	} else {
-		res.send('not logged in');
+		res.status(403).send('Access Denied!');
 	}
+});
+
+app.get('/user', function(req, res){
+	if (req.session.username.length > 0){
+		res.render('user_page')
+	} else {
+		res.status(403).send('Access Denied!');
+	}
+});
+
+app.get('/guest', function(req, res){
+	res.render('guest_page')
 });
 
 app.listen(port, function(){

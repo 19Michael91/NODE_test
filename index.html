@@ -6,12 +6,11 @@
 	<title>Log in</title>
 	<script>
 		window.onload = function(){
-			var btn = document.getElementById('btn');
+			var btn1 = document.getElementById('btn1');
 			var inputs = document.getElementsByTagName('input');
 
-			btn.addEventListener('click', function(){
+			btn1.addEventListener('click', function(){
 				var xhr = new XMLHttpRequest();
-
 				xhr.open('POST', '/login');
 				var userData = {
 					username: inputs[0].value,
@@ -26,6 +25,32 @@
 					alert('server error!');
 				}
 			});
+
+			var btn2 = document.getElementById('btn2');
+
+			btn2.onclick = function(){
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', '/logout');
+				xhr.send();
+				xhr.onload = function(){
+					alert(this.responseText);
+				};
+			};
+
+			var btns = document.querySelector('.btns');
+
+			btns.onclick = function(e){
+				if(!e.target.dataset.page){
+					return false;
+				}
+				var target = e.target.dataset.page;
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', '/' + target );
+				xhr.send();
+				xhr.onload = function(){
+					window.location.href="/" + target;
+				};
+			}
 		}
 	</script>
 </head>
@@ -42,9 +67,16 @@
 				<input class="form-control input-lg" type="text" id="password"/>
 			</div>
 			<div class="form-group">
-				<input class="btn btn-lg btn-success" type="button" id="btn" value="Log in"/>
+				<input class="btn btn-lg btn-success" type="button" id="btn1" value="Log in"/>
+				<button value="Log out" id="btn2" class="btn btn-danger btn-lg">Admin page</button>
 			</div>
 		</form>
+	</div>
+	<div class="panel btns">
+		<h2>Pages: </h2>
+		<button data-page="admin" class="btn btn-info btn-lg">Admin page</button>
+		<button data-page="user" class="btn btn-success btn-lg">User page</button>
+		<button data-page="guest" class="btn btn-warning btn-lg">Guest page</button>
 	</div>
 </body>
 </html>
